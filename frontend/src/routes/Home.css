@@ -1,0 +1,56 @@
+/* Home.css */
+
+.container {
+  background-color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh;
+}
+
+.geotag {
+  background-color: white;
+  flex: 1;
+  margin-right: 40px;
+  padding-left: 20%;
+}
+
+.geotagimage {
+  flex: 1;
+  text-align: center;
+  padding-right: 20%;
+}
+
+.geotagimage img {
+  max-width: 100%;
+  height: auto;
+}
+
+h1 {
+  font-size: 2.5rem;
+  line-height: 1.4;
+  margin: 0;
+  width: 100%;
+  font-weight: bold;
+}
+
+.info {
+  background-color: white;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.info1 {
+  width: 50%;
+  height: 50%;
+}
+.info2 {
+  width: 50%;
+  height: 50%;
+}
+.info3 {
+  width: 50%;
+  height: 50%;
+}
