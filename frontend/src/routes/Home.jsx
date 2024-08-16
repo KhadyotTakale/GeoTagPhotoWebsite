@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import "./Home.css";
 import img1 from "/src/assets/img1.png";
+import step1 from "/src/assets/step1.png";
+import step2 from "/src/assets/step2.png";
+import step3 from "/src/assets/step3.png";
 
 const Home = () => {
   return (
@@ -14,10 +17,19 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="info">
-        <div className="info1">info1</div>
-        <div className="info2">info2</div>
-        <div className="info3">info3</div>
+      <div className="steps">
+        <div className="step step1">
+          <h2 className="st1">Step1</h2>
+          <img src={step1} alt="Step 1" />
+        </div>
+        <div className="step step2">
+          <h2 className="st1">Step2</h2>
+          <img src={step2} alt="Step 2" />
+        </div>
+        <div className="step step3">
+          <h2 className="st1">Step3</h2>
+          <img src={step3} alt="Step 3" />
+        </div>
       </div>
     </>
   );

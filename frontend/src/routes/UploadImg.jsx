@@ -9,12 +9,13 @@ const UploadImg = () => {
   const [previewImages, setPreviewImages] = useState([]);
   const [imageData, setImageData] = useState([]);
 
-  const { coords, isGeolocationAvailable, isGeolocationEnabled } = useGeolocated({
-    positionOptions: {
-      enableHighAccuracy: true,
-    },
-    userDecisionTimeout: 5000,
-  });
+  const { coords, isGeolocationAvailable, isGeolocationEnabled } =
+    useGeolocated({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      userDecisionTimeout: 5000,
+    });
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files);
