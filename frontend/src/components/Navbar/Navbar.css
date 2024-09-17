@@ -1,11 +1,4 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-.main-content {
-  padding-top: 80px; /* Adjust this based on the actual height of the navbar */
-}
+/* Navbar.css */
 
 .header {
   position: fixed;
@@ -18,7 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 100;
+  z-index: 100; /* Lower than sidebar to ensure sidebar appears above */
   border-bottom: 2px solid #ccc;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 }
@@ -52,6 +45,27 @@
   color: lightgray;
 }
 
+.navbar button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-family: inherit; /* Ensure font consistency */
+  color: black;
+  margin-left: 20px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  border-right: 2px solid black;
+  padding-right: 20px;
+}
+
+.navbar button:hover {
+  color: lightgray;
+}
+
+.navbar button:last-child {
+  border-right: none;
+}
+
 @media (max-width: 768px) {
   .navbar {
     display: none;
@@ -72,7 +86,8 @@
     padding: 10px 0;
   }
 
-  .navbar a {
+  .navbar a,
+  .navbar button {
     margin: 10px 0;
     text-align: center;
     border: none;

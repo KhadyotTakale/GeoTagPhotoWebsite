@@ -6,10 +6,12 @@ const Login = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [formData, setFormData] = useState({
     usernameOrEmail: "",
-    email: "",
+    username: "", // added for signup
+    email: "", // added for signup
     password: "",
-    confirmPassword: "",
+    confirmPassword: "", // added for signup
   });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -20,15 +22,55 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
+    // Ensure password match for signup
     if (isSignup && formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
+      setLoading(false);
       return;
     }
-    // Handle form submission logic here
-    alert(`Form submitted! ${isSignup ? "Signup" : "Login"}`);
-    navigate("/UploadImg");
+
+    const url = isSignup ? "/signup" : "/login";
+    const requestBody = isSignup
+      ? {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+        }
+      : {
+          usernameOrEmail: formData.usernameOrEmail,
+          password: formData.password,
+        };
+
+    try {
+      const response = await fetch(`http://localhost:4000${url}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Something went wrong!");
+      } else {
+        alert(data.message);
+        if (!isSignup) {
+          localStorage.setItem("token", data.token);
+          navigate("/sidebar");
+        }
+      }
+    } catch (error) {
+      alert("An error occurred: " + error.message);
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -110,8 +152,8 @@ const Login = () => {
             </div>
           )}
 
-          <button type="submit" className="submit-button">
-            {isSignup ? "Signup" : "Login"}
+          <button type="submit" className="submit-button" disabled={loading}>
+            {loading ? "Processing..." : isSignup ? "Signup" : "Login"}
           </button>
 
           <div className="toggle-link">

@@ -3,6 +3,7 @@ import { useGeolocated } from "react-geolocated";
 import "./UploadImg.css";
 import img2 from "/src/assets/img2.svg"; // Import the image
 import exifr from "exifr";
+import axios from "axios";
 
 const UploadImg = () => {
   const [uploadedImages, setUploadedImages] = useState([]);
@@ -36,27 +37,37 @@ const UploadImg = () => {
 
     // Extract EXIF data asynchronously
     const exifPromises = files.map(async (file) => {
-      try {
-        const data = await exifr.parse(file);
-        const latitude = data.latitude || (coords ? coords.latitude : "N/A");
-        const longitude = data.longitude || (coords ? coords.longitude : "N/A");
-        const dateTime = data.DateTimeOriginal
-          ? new Date(data.DateTimeOriginal).toLocaleString()
-          : uploadTime; // Use upload time if EXIF date is not available
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = async () => {
+          try {
+            // Convert array buffer to a binary string
+            const data = await exifr.parse(reader.result);
+            console.log("EXIF Data:", data); // Log EXIF data for debugging
+            const latitude =
+              data?.latitude || (coords ? coords.latitude : "N/A");
+            const longitude =
+              data?.longitude || (coords ? coords.longitude : "N/A");
+            const dateTime = data?.DateTimeOriginal
+              ? new Date(data.DateTimeOriginal).toLocaleString()
+              : uploadTime; // Use upload time if EXIF date is not available
 
-        return {
-          latitude,
-          longitude,
-          dateTime,
+            resolve({
+              latitude,
+              longitude,
+              dateTime,
+            });
+          } catch (error) {
+            console.error("Error parsing EXIF data:", error);
+            resolve({
+              latitude: coords ? coords.latitude : "N/A",
+              longitude: coords ? coords.longitude : "N/A",
+              dateTime: uploadTime, // Use upload time if error occurs
+            });
+          }
         };
-      } catch (error) {
-        console.error("Error parsing EXIF data:", error);
-        return {
-          latitude: coords ? coords.latitude : "N/A",
-          longitude: coords ? coords.longitude : "N/A",
-          dateTime: uploadTime, // Use upload time if error occurs
-        };
-      }
+        reader.readAsArrayBuffer(file); // Read file as array buffer
+      });
     });
 
     // Update image data after all promises resolve
@@ -64,11 +75,52 @@ const UploadImg = () => {
     setImageData((prevData) => [...prevData, ...newImageData]);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Uploaded images:", uploadedImages);
-    console.log("Extracted image data:", imageData);
+
+    // Create a FormData object to send the image to the backend
+    const formData = new FormData();
+
+    // Append each file and its related metadata to FormData
+    uploadedImages.forEach((image, index) => {
+      formData.append("files", image.file); // Image file
+      formData.append(`latitude_${index}`, imageData[index]?.latitude || "N/A");
+      formData.append(
+        `longitude_${index}`,
+        imageData[index]?.longitude || "N/A"
+      );
+      formData.append(
+        `dateTime_${index}`,
+        imageData[index]?.dateTime || new Date().toLocaleString()
+      );
+    });
+
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // JWT token
+          },
+        }
+      );
+
+      // Show alert based on the backend response
+      if (response.data.success === 1) {
+        alert(
+          response.data.message || "Your image has been uploaded successfully!"
+        );
+      } else {
+        alert("Upload failed. Please try again.");
+      }
+
+      console.log("Server response:", response.data);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      alert("An error occurred while uploading the image. Please try again.");
+    }
   };
 
   return (

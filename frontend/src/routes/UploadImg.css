@@ -1,20 +1,23 @@
 .upload-container {
-  max-width: 600px;
-  margin: 50px auto;
+  margin-left: 550px; /* Ensure it fits next to the sidebar */
+  margin-top: 200px; /* Adjust top margin */
   padding: 20px;
-  border-radius: 10px;
   background-color: #f8f8f8;
+  border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: calc(100% - 250px); /* Ensure it fits within the sidebar width */
   text-align: center;
 }
 
 .upload-icon {
-  width: 150px;
-  margin-bottom: 20px;
+  width: 100px; /* Reduce the size for a more compact look */
+  margin-bottom: 15px;
 }
 
 h2 {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+  font-size: 18px; /* Adjust for a smaller screen */
 }
 
 .upload-section {
@@ -28,22 +31,24 @@ label {
   font-weight: bold;
   display: block;
   margin-bottom: 10px;
+  font-size: 14px; /* Adjust font size */
 }
 
 input[type="file"] {
-  padding: 10px;
-  width: 80%;
-  max-width: 300px;
-  margin-bottom: 20px;
+  padding: 8px;
+  width: 90%; /* Make the input field responsive */
+  max-width: 250px; /* Adjust the width */
+  margin-bottom: 15px;
 }
 
 .upload-button {
-  padding: 10px 20px;
+  padding: 8px 16px;
   background-color: rgb(195, 86, 217);
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 14px; /* Adjust font size */
 }
 
 .upload-button:hover {
@@ -51,14 +56,14 @@ input[type="file"] {
 }
 
 .image-preview-section {
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .image-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  font-size: 14px;
+  font-size: 12px; /* Adjust table font size */
 }
 
 .image-table th,
@@ -74,8 +79,34 @@ input[type="file"] {
 }
 
 .image-table td img {
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 80px; /* Reduce the size of the preview images */
+  max-height: 80px;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .upload-container {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .upload-icon {
+    width: 80px;
+  }
+
+  input[type="file"] {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .image-table {
+    font-size: 10px;
+  }
+
+  .image-table td img {
+    max-width: 60px;
+    max-height: 60px;
+  }
 }
