@@ -189,7 +189,6 @@ app.post("/removeimage", async (req, res) => {
     });
   }
 });
-f;
 
 // Start the server
 app.listen(port, () => {
