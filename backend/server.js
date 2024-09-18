@@ -1,11 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const fetch = require("node-fetch");
 
 const app = express();
 const port = 4000;
@@ -38,6 +39,7 @@ const imageSchema = new mongoose.Schema({
   latitude: { type: String },
   longitude: { type: String },
   dateTime: { type: String },
+  city: { type: String }, // New city field
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
@@ -70,6 +72,25 @@ const authenticate = (req, res, next) => {
     req.userId = decoded.userId;
     next();
   });
+};
+
+// Function to get the city name using latitude and longitude
+const getCityName = async (latitude, longitude) => {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+    );
+    const data = await response.json();
+    return (
+      data.address.city ||
+      data.address.town ||
+      data.address.village ||
+      "Unknown"
+    );
+  } catch (error) {
+    console.error("Error fetching city name:", error);
+    return "Unknown";
+  }
 };
 
 // Signup route
@@ -133,17 +154,23 @@ app.post(
     }
 
     try {
-      const imagePromises = req.files.map((file, index) => {
+      const imagePromises = req.files.map(async (file, index) => {
         const latitude = req.body[`latitude_${index}`] || "N/A";
         const longitude = req.body[`longitude_${index}`] || "N/A";
         const dateTime =
           req.body[`dateTime_${index}`] || new Date().toLocaleString();
+
+        let city = "Unknown";
+        if (latitude !== "N/A" && longitude !== "N/A") {
+          city = await getCityName(latitude, longitude);
+        }
 
         const newImage = new Image({
           filename: file.filename,
           latitude,
           longitude,
           dateTime,
+          city, // Save city
           userId: req.userId,
         });
 
@@ -173,7 +200,6 @@ app.get("/my-images", authenticate, async (req, res) => {
 
 app.post("/removeimage", async (req, res) => {
   try {
-    // Use the correct field "_id" instead of "id"
     await Image.findOneAndDelete({ _id: req.body.id });
 
     console.log("Image Removed");

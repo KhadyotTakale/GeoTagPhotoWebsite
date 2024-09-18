@@ -18,6 +18,24 @@ const UploadImg = () => {
       userDecisionTimeout: 5000,
     });
 
+  const getCityName = async (latitude, longitude) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+      );
+      const data = await response.json();
+      return (
+        data.address.city ||
+        data.address.town ||
+        data.address.village ||
+        "Unknown"
+      );
+    } catch (error) {
+      console.error("Error fetching city name:", error);
+      return "Unknown";
+    }
+  };
+
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files);
     const uploadTime = new Date().toLocaleString(); // Capture upload time
@@ -52,10 +70,17 @@ const UploadImg = () => {
               ? new Date(data.DateTimeOriginal).toLocaleString()
               : uploadTime; // Use upload time if EXIF date is not available
 
+            // Fetch the city name based on latitude and longitude
+            const city =
+              latitude !== "N/A" && longitude !== "N/A"
+                ? await getCityName(latitude, longitude)
+                : "N/A";
+
             resolve({
               latitude,
               longitude,
               dateTime,
+              city, // Add city to the data
             });
           } catch (error) {
             console.error("Error parsing EXIF data:", error);
@@ -63,6 +88,7 @@ const UploadImg = () => {
               latitude: coords ? coords.latitude : "N/A",
               longitude: coords ? coords.longitude : "N/A",
               dateTime: uploadTime, // Use upload time if error occurs
+              city: "N/A", // Default city if there's an error
             });
           }
         };
@@ -93,6 +119,7 @@ const UploadImg = () => {
         `dateTime_${index}`,
         imageData[index]?.dateTime || new Date().toLocaleString()
       );
+      formData.append(`city_${index}`, imageData[index]?.city || "N/A"); // Append city to the form data
     });
 
     try {
@@ -149,6 +176,7 @@ const UploadImg = () => {
             <thead>
               <tr>
                 <th>Image</th>
+                <th>City</th> {/* Add a column for city */}
                 <th>Latitude</th>
                 <th>Longitude</th>
                 <th>Date & Time</th>
@@ -164,6 +192,8 @@ const UploadImg = () => {
                       className="preview-img"
                     />
                   </td>
+                  <td>{imageData[index]?.city || "N/A"}</td>{" "}
+                  {/* Display city */}
                   <td>{imageData[index]?.latitude || "N/A"}</td>
                   <td>{imageData[index]?.longitude || "N/A"}</td>
                   <td>{imageData[index]?.dateTime || "N/A"}</td>

@@ -57,6 +57,7 @@ const Listimage = () => {
         <p>Latitude</p>
         <p>Longitude</p>
         <p>Date</p>
+        <p>City</p> {/* Added City Column */}
         <p>Remove</p>
       </div>
       {images.length === 0 ? (
@@ -72,6 +73,7 @@ const Listimage = () => {
             <p>{image.latitude}</p>
             <p>{image.longitude}</p>
             <p>{image.dateTime}</p>
+            <p>{image.city || "Unknown"}</p> {/* Display City */}
             <img
               onClick={() => remove_images(image._id)} // Use image._id for removal
               src={cross_icon}

@@ -15,7 +15,7 @@
 .list-images-header,
 .list-images-item {
   display: grid;
-  grid-template-columns: 100px 1fr 1fr 1fr 40px; /* Adjust the grid column widths */
+  grid-template-columns: 100px 1fr 1fr 1fr 1fr 40px; /* Adjusted to add a column for City */
   align-items: center;
   padding: 5px;
   border-bottom: 1px solid #ddd;
